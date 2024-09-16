@@ -496,7 +496,7 @@ var ZenWorkspaces = {
     for (let workspace of workspaces.workspaces) {
       workspace.used = workspace.uuid === window.uuid;
     }
-    this.unsafeSaveWorkspaces(workspaces);
+    await this.unsafeSaveWorkspaces(workspaces);
     console.info('ZenWorkspaces: Changing workspace to', window.uuid);
     for (let tab of gBrowser.tabs) {
       if (
