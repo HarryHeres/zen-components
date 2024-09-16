@@ -64,6 +64,9 @@ var ZenWorkspaces = {
       await IOUtils.writeJSON(this._storeFile, {});
     }
     if (this.workspaceEnabled) {
+      this._initializeWorkspaceCreationIcons();
+      this._initializeWorkspaceEditIcons();
+      this._initializeWorkspaceTabContextMenus();
       window.addEventListener('TabClose', this.handleTabClose.bind(this));
       let workspaces = await this._workspaces();
       if (workspaces.workspaces.length === 0) {
@@ -82,9 +85,6 @@ var ZenWorkspaces = {
         }
         this.changeWorkspace(activeWorkspace, true);
       }
-      this._initializeWorkspaceCreationIcons();
-      this._initializeWorkspaceEditIcons();
-      this._initializeWorkspaceTabContextMenus();
     }
   },
 
