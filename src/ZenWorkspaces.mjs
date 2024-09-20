@@ -76,11 +76,11 @@ var ZenWorkspaces = {
   async initializeWorkspaces() {
     Services.prefs.addObserver('zen.workspaces.enabled', this.onWorkspacesEnabledChanged.bind(this));
     Services.prefs.addObserver('zen.workspaces.show-icon-strip', this.onWorkspacesIconStripChanged.bind(this));
-    await this.initializeWorkspacesButton();
     let file = new FileUtils.File(this._storeFile);
     if (!file.exists()) {
       await IOUtils.writeJSON(this._storeFile, {});
     }
+    await this.initializeWorkspacesButton();
     if (this.workspaceEnabled) {
       this._initializeWorkspaceCreationIcons();
       this._initializeWorkspaceEditIcons();
@@ -392,7 +392,11 @@ var ZenWorkspaces = {
         if (workspace.default) {
           button.setAttribute('default', 'true');
         }
-        button.onclick = (async () => {
+        button.onclick = (async (_, event) => {
+          // Make sure it's not a context menu event
+          if (event.button !== 0) {
+            return;
+          }
           await this.changeWorkspace(workspace);
         }).bind(this, workspace);
         let icon = document.createXULElement('div');
@@ -401,6 +405,11 @@ var ZenWorkspaces = {
         button.appendChild(icon);
         newWorkspacesButton.appendChild(button);
       }
+      // Listen for context menu events and open the all workspaces dialog
+      newWorkspacesButton.addEventListener('contextmenu', (event) => {
+        event.preventDefault();
+        this.openWorkspacesDialog(event);
+      });
     }
 
     workspaceList.after(newWorkspacesButton);
@@ -569,6 +578,10 @@ var ZenWorkspaces = {
     let firstTab = undefined;
     let workspaces = await this._workspaces();
     for (let workspace of workspaces.workspaces) {
+      if (workspace.uuid === window.uuid && workspace.used) {
+        // If the workspace is already active, do nothing
+        return;
+      }
       workspace.used = workspace.uuid === window.uuid;
     }
     await this.unsafeSaveWorkspaces(workspaces);
