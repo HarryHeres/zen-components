@@ -1,4 +1,3 @@
-
 var ZenWorkspaces = {
   /**
    * Stores workspace IDs and their last selected tabs.
@@ -493,7 +492,10 @@ var ZenWorkspaces = {
     this.unsafeSaveWorkspaces(workspaces);
     console.info('ZenWorkspaces: Changing workspace to', window.uuid);
     for (let tab of gBrowser.tabs) {
-      if ((tab.getAttribute('zen-workspace-id') === window.uuid && !(tab.pinned && !shouldAllowPinnedTabs)) || !tab.hasAttribute('zen-workspace-id')) {
+      if (
+        (tab.getAttribute('zen-workspace-id') === window.uuid && !(tab.pinned && !shouldAllowPinnedTabs)) ||
+        !tab.hasAttribute('zen-workspace-id')
+      ) {
         if (!firstTab) {
           firstTab = tab;
         } else if (gBrowser.selectedTab === tab) {
